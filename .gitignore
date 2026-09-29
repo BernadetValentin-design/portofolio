@@ -1,0 +1,13 @@
+# Private notes and working files, kept on this computer only
+CLAUDE.md
+.claude/
+content/brief.md
+content/liens.txt
+content/cv-blackstone.html
+content/*Blackstone*
+versions/
+portfolio-valentin/
+
+# Images the site no longer uses
+content/portrait.jpg
+content/llmresearch.png

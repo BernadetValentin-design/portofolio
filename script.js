@@ -320,11 +320,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (p.id === 'scene') {
             return `${liveScene(p, false)}<p class="media-hint">${t('live_hint')}</p>`;
         }
-        if (p.play && p.demo) {
-            return `<div class="play-box" data-demo="${p.demo}" data-title="${title}">
-                <img src="${p.img}" alt="${title}">
-                <button type="button" class="btn play-btn" data-play><i class="fas fa-play"></i> ${t('try_here')}</button>
-            </div>
+        if (p.play) {
+            return `<div class="zoltar" data-zoltar></div>
             <p class="media-hint">${t('play_hint')}</p>`;
         }
         if (p.model) {
@@ -785,13 +782,12 @@ document.addEventListener('DOMContentLoaded', () => {
         drawerBody.querySelector('[data-close]').addEventListener('click', () => drawer.close());
         startLive(drawerBody);
 
-        // Swap the screenshot for the real demo only when asked: it loads a neural network
-        const play = drawerBody.querySelector('[data-play]');
-        if (play) {
-            play.addEventListener('click', () => {
-                const box = play.closest('.play-box');
-                box.innerHTML = `<iframe src="${box.dataset.demo}" title="${box.dataset.title}" loading="lazy"></iframe>`;
-                box.classList.add('is-playing');
+        // Zoltar: draw a digit, the CNN guesses it
+        const zoltar = drawerBody.querySelector('[data-zoltar]');
+        if (zoltar && typeof window.mountZoltar === 'function') {
+            window.mountZoltar(zoltar, {
+                draw: t('z_draw'), says: t('z_says'), is: t('z_is'),
+                seen: t('z_seen'), clear: t('z_clear'), loading: t('z_loading'),
             });
         }
 
@@ -821,6 +817,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyStatic();
     restartPlaceholder();
     route();
+
     document.fonts.ready.then(() => {
         if (results.hidden) return;
         alignToLogo();

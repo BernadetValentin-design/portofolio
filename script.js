@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ================= Building blocks =================
 
     function crumb(path) {
-        return `<p class="crumb">valentin.dev › ${esc(path.slice(0, -1).join(' › '))}${path.length > 1 ? ' › ' : ''}<b>${esc(path[path.length - 1])}</b></p>`;
+        return `<p class="crumb">valentinbernadet › ${esc(path.slice(0, -1).join(' › '))}${path.length > 1 ? ' › ' : ''}<b>${esc(path[path.length - 1])}</b></p>`;
     }
 
     function projectLinks(p) {
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>${esc(tx(p.desc).split('. ')[0])}.</p>
                 ${projectLinks(p)}
             </div>
-            ${withThumb ? `<img src="${p.img}" alt="${esc(title)}" loading="lazy" data-open="${p.id}">` : ''}
+            ${withThumb ? `<img src="${p.thumb || p.img}" alt="${esc(title)}" loading="lazy" data-open="${p.id}">` : ''}
         </article>`;
     }
 
@@ -295,13 +295,66 @@ document.addEventListener('DOMContentLoaded', () => {
         ).join('')}</div>`;
     }
 
+    // ================= Live media: WebGPU scene, playable demo, 3D model =================
+
+    // The screenshot stays underneath: it is what people see when WebGPU is missing
+    function liveScene(p, small) {
+        return `<div class="live${small ? ' live-small' : ''}" ${small ? `data-open="${p.id}"` : ''}>
+            <img src="${p.img}" alt="${esc(tx(p.title))}">
+            <canvas data-live aria-hidden="true"></canvas>
+            <span class="live-badge">${t('live_badge')}</span>
+        </div>`;
+    }
+
+    function startLive(root) {
+        if (typeof window.mountBlobs !== 'function') return;
+        root.querySelectorAll('canvas[data-live]').forEach((canvas) => {
+            window.mountBlobs(canvas).then((running) => {
+                if (running) canvas.parentElement.classList.add('is-running');
+            });
+        });
+    }
+
+    function drawerMedia(p) {
+        const title = esc(tx(p.title));
+        if (p.id === 'scene') {
+            return `${liveScene(p, false)}<p class="media-hint">${t('live_hint')}</p>`;
+        }
+        if (p.play && p.demo) {
+            return `<div class="play-box" data-demo="${p.demo}" data-title="${title}">
+                <img src="${p.img}" alt="${title}">
+                <button type="button" class="btn play-btn" data-play><i class="fas fa-play"></i> ${t('try_here')}</button>
+            </div>
+            <p class="media-hint">${t('play_hint')}</p>`;
+        }
+        if (p.model) {
+            loadModelViewer();
+            return `<model-viewer class="model" src="${p.model}" poster="${p.img}" alt="${title}"
+                camera-controls auto-rotate touch-action="pan-y" shadow-intensity="1"></model-viewer>
+            <p class="media-hint">${t('model_hint')}</p>`;
+        }
+        return `<div class="drawer-img"><img src="${p.img}" alt="${title}"></div>`;
+    }
+
+    // Google's <model-viewer> is only downloaded when a project has a 3D model
+    let modelViewerLoading = false;
+    function loadModelViewer() {
+        if (modelViewerLoading) return;
+        modelViewerLoading = true;
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4/dist/model-viewer.min.js';
+        document.head.append(script);
+    }
+
     function knowledgePanel() {
-        const [a, b] = [PROJECTS[0], PROJECTS[5]];
+        const scene = PROJECTS.find((p) => p.id === 'scene');
+        const robot = PROJECTS.find((p) => p.id === 'robot');
         return `<aside class="kp" aria-label="Valentin Bernadet">
             <div class="kp-images">
                 <img src="${PORTRAIT}" alt="${esc(t('portrait'))}">
-                <img src="${a.img}" alt="${esc(tx(a.title))}" data-open="${a.id}">
-                <img src="${b.img}" alt="${esc(tx(b.title))}" data-open="${b.id}">
+                ${liveScene(scene, true)}
+                <img src="${robot.img}" alt="${esc(tx(robot.title))}" data-open="${robot.id}">
             </div>
             <div class="kp-body">
                 <h2>Valentin Bernadet</h2>
@@ -468,7 +521,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.panel').forEach((panel) => {
             const on = panel.dataset.panel === tab;
             panel.hidden = !on;
-            if (on) panel.innerHTML = panels[tab]();
+            if (on) {
+                panel.innerHTML = panels[tab]();
+                startLive(panel);
+            }
         });
         if (tab !== 'search') stats.textContent = statsFor(tab);
 
@@ -714,7 +770,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <button type="button" class="btn btn-sm btn-ghost" data-close>${t('close')} ✕</button>
             </div>
-            <div class="drawer-img"><img src="${p.img}" alt="${esc(title)}"></div>
+            ${drawerMedia(p)}
             <h2 id="drawer-title">${esc(title)}${p.ongoing ? ` <span class="tag">${t('ongoing')}</span>` : ''}</h2>
             <p class="lead">${esc(tx(p.sub))}</p>
             <div class="chips">${tx(p.tags).map((tag) => `<span>${esc(tag)}</span>`).join('')}</div>
@@ -727,6 +783,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         drawerBody.querySelectorAll('[data-go]').forEach((btn) => btn.addEventListener('click', () => openProject(btn.dataset.go)));
         drawerBody.querySelector('[data-close]').addEventListener('click', () => drawer.close());
+        startLive(drawerBody);
+
+        // Swap the screenshot for the real demo only when asked: it loads a neural network
+        const play = drawerBody.querySelector('[data-play]');
+        if (play) {
+            play.addEventListener('click', () => {
+                const box = play.closest('.play-box');
+                box.innerHTML = `<iframe src="${box.dataset.demo}" title="${box.dataset.title}" loading="lazy"></iframe>`;
+                box.classList.add('is-playing');
+            });
+        }
 
         drawer.dataset.current = id;
         if (!drawer.open) drawer.showModal();
@@ -738,6 +805,9 @@ document.addEventListener('DOMContentLoaded', () => {
     drawer.addEventListener('click', (e) => {
         if (e.target === drawer) drawer.close();
     });
+
+    // Emptying the page stops the 3D scene and the demo once it is closed
+    drawer.addEventListener('close', () => { drawerBody.innerHTML = ''; });
 
     drawer.addEventListener('keydown', (e) => {
         if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;

@@ -6,7 +6,7 @@ const PHONE = { href: '+33670401097', label: '+33 6 70 40 10 97' };
 const LINKEDIN = 'https://www.linkedin.com/in/valentin-bernadet';
 const GITHUB = 'https://github.com/BernadetValentin-design';
 const CV = 'content/Bernadet_Valentin_Resume.pdf';
-const PORTRAIT = 'content/photo%20cv.jpg';
+const PORTRAIT = 'content/web/portrait.jpg';
 
 const LANGS = { en: 'English', fr: 'Français', es: 'Español' };
 
@@ -86,6 +86,19 @@ const UI = {
         es: 'Consejo: las flechas ← y → pasan de un proyecto a otro.',
     },
     ongoing: { en: 'ongoing', fr: 'en cours', es: 'en curso' },
+    try_here: { en: 'Try it here', fr: 'Essayer ici', es: 'Probar aquí' },
+    play_hint: {
+        en: 'Draw a digit in the black box, Zoltar guesses it. It runs in your browser.',
+        fr: 'Dessinez un chiffre dans le cadre noir, Zoltar le devine. Tout tourne dans votre navigateur.',
+        es: 'Dibuja un número en el recuadro negro y Zoltar lo adivina. Todo se ejecuta en tu navegador.',
+    },
+    live_badge: { en: 'Live · WebGPU', fr: 'En direct · WebGPU', es: 'En directo · WebGPU' },
+    live_hint: {
+        en: 'Rendered live on your graphics card with WebGPU raymarching. Move your mouse: one sphere follows it.',
+        fr: 'Rendu en direct sur votre carte graphique, en raymarching WebGPU. Bougez la souris : une sphère la suit.',
+        es: 'Renderizado en directo en tu tarjeta gráfica, con raymarching WebGPU. Mueve el ratón: una esfera lo sigue.',
+    },
+    model_hint: { en: 'Drag to turn the robot, scroll to zoom.', fr: 'Faites glisser pour tourner le robot, molette pour zoomer.', es: 'Arrastra para girar el robot, rueda para hacer zoom.' },
     portrait: { en: 'Portrait of Valentin Bernadet', fr: 'Portrait de Valentin Bernadet', es: 'Retrato de Valentin Bernadet' },
 
     kp_sub: { en: 'AI & Software Engineering Student', fr: 'Étudiant ingénieur, IA et logiciel', es: 'Estudiante de ingeniería, IA y software' },
@@ -159,7 +172,7 @@ const UI = {
 /* ---------- Projects ---------- */
 const PROJECTS = [
     {
-        id: 'rag', img: 'content/llmresearch-v2.jpg', slug: 'llm-agent',
+        id: 'rag', img: 'content/web/llmresearch.jpg', thumb: 'content/web/llmresearch-thumb.jpg', slug: 'llm-agent',
         demo: 'https://bernadetvalentin-design.github.io/LLM_ResearchPaper_Analysis/',
         code: 'https://github.com/BernadetValentin-design/LLM_ResearchPaper_Analysis',
         title: 'Research Paper LLM Agent',
@@ -177,7 +190,7 @@ const PROJECTS = [
         },
     },
     {
-        id: 'mnist', img: 'content/mnist.png', slug: 'zoltar',
+        id: 'mnist', img: 'content/web/mnist.jpg', slug: 'zoltar', play: true,
         demo: 'https://bernadetvalentin-design.github.io/ZoltarDigit_Valentin/',
         code: 'https://github.com/BernadetValentin-design/ZoltarDigit_Valentin',
         title: 'MNIST Digit Recognition',
@@ -195,7 +208,7 @@ const PROJECTS = [
         },
     },
     {
-        id: 'scene', img: 'content/sceneeditor.png', slug: 'webgpu',
+        id: 'scene', img: 'content/web/sceneeditor.jpg', slug: 'webgpu',
         demo: 'https://bernadetvalentin-design.github.io/WebGPU_Project_Interative_Scene/',
         code: 'https://github.com/BernadetValentin-design/WebGPU_Project_Interative_Scene',
         title: '3D Scene Editor',
@@ -213,7 +226,7 @@ const PROJECTS = [
         },
     },
     {
-        id: 'etextile', img: 'content/fpga.png', slug: 'e-textile', ongoing: true,
+        id: 'etextile', img: 'content/web/fpga.jpg', slug: 'e-textile', ongoing: true,
         title: 'E-textile Capacitive Matrix',
         sub: { en: 'A soft touch surface, work in progress', fr: 'Une surface tactile souple, projet en cours', es: 'Una superficie táctil flexible, en curso' },
         tags: { en: ['FPGA', 'Sensors', 'HCI'], fr: ['FPGA', 'Capteurs', 'IHM'], es: ['FPGA', 'Sensores', 'HCI'] },
@@ -229,7 +242,7 @@ const PROJECTS = [
         },
     },
     {
-        id: 'pocket', img: 'content/extrapocket.jpeg', slug: 'extra-pocket',
+        id: 'pocket', img: 'content/web/extrapocket.jpg', slug: 'extra-pocket',
         title: 'The Extra Pocket',
         sub: { en: 'A belt pocket in recycled leather', fr: 'Une poche de ceinture en cuir recyclé', es: 'Un bolsillo de cinturón de cuero reciclado' },
         tags: { en: ['Product design', 'Manufacturing', 'Kickstarter'], fr: ['Design produit', 'Production', 'Kickstarter'], es: ['Diseño de producto', 'Producción', 'Kickstarter'] },
@@ -245,7 +258,8 @@ const PROJECTS = [
         },
     },
     {
-        id: 'robot', img: 'content/octopode.jpeg', slug: 'robot',
+        // To show the robot in 3D, export the CAD model as .glb and set: model: 'content/web/robot.glb'
+        id: 'robot', img: 'content/web/octopode.jpg', slug: 'robot', model: null,
         title: { en: 'Octopod robot', fr: 'Robot octopode', es: 'Robot octópodo' },
         sub: { en: 'A robot that delivers medication', fr: 'Un robot qui distribue des médicaments', es: 'Un robot que distribuye medicamentos' },
         tags: { en: ['Robotics', 'Electronics', '3D printing'], fr: ['Robotique', 'Électronique', 'Impression 3D'], es: ['Robótica', 'Electrónica', 'Impresión 3D'] },

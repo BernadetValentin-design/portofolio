@@ -11,3 +11,12 @@ portfolio-valentin/
 # Images the site no longer uses
 content/portrait.jpg
 content/llmresearch.png
+
+# Full-size originals: the site uses the light copies in content/web/
+content/fpga.png
+content/extrapocket.jpeg
+content/mnist.png
+content/octopode.jpeg
+content/sceneeditor.png
+content/llmresearch-v2.jpg
+content/photo cv.jpg

@@ -320,6 +320,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (p.id === 'scene') {
             return `${liveScene(p, false)}<p class="media-hint">${t('live_hint')}</p>`;
         }
+        if (p.cushion) {
+            return `<div class="cushion" data-cushion></div>
+            <p class="media-hint">${t('cushion_hint')}</p>`;
+        }
         if (p.play) {
             return `<div class="zoltar" data-zoltar></div>
             <p class="media-hint">${t('play_hint')}</p>`;
@@ -782,6 +786,10 @@ document.addEventListener('DOMContentLoaded', () => {
         drawerBody.querySelector('[data-close]').addEventListener('click', () => drawer.close());
         startLive(drawerBody);
 
+        // E-textile: the cushion and its finger
+        const cushion = drawerBody.querySelector('[data-cushion]');
+        if (cushion && typeof window.mountCushion === 'function') window.mountCushion(cushion, t);
+
         // Zoltar: draw a digit, the CNN guesses it
         const zoltar = drawerBody.querySelector('[data-zoltar]');
         if (zoltar && typeof window.mountZoltar === 'function') {
@@ -817,6 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
     applyStatic();
     restartPlaceholder();
     route();
+
 
     document.fonts.ready.then(() => {
         if (results.hidden) return;
